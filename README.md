@@ -17,6 +17,50 @@ Slideshow de fotos em tempo real para casamento. Os convidados compartilham foto
 - [Tailwind CSS](https://tailwindcss.com/) v4
 - [qrcode.react](https://github.com/zpao/qrcode.react) para geração de QR Code
 
+## ❓ FAQ - Perguntas Frequentes
+
+### Onde devo configurar os IDs do Google Drive e do Projeto?
+
+**Resposta: Na VERCEL, não no código!**
+
+As variáveis de ambiente (API Key, Folder ID, etc.) devem ser configuradas diretamente nas **Environment Variables** do seu projeto na Vercel:
+
+1. Acesse seu projeto na Vercel
+2. Vá em **Settings → Environment Variables**
+3. Adicione as três variáveis necessárias (veja seção "Deploy na Vercel" abaixo)
+4. Faça um novo deploy
+
+**⚠️ NUNCA adicione as chaves diretamente no código!** Isso é:
+- ❌ Inseguro (suas chaves ficariam públicas no GitHub)
+- ❌ Inflexível (não pode ter valores diferentes para dev/prod)
+- ✅ Use sempre variáveis de ambiente na Vercel
+
+### Já tenho o ID da pasta e do projeto Google Cloud, e agora?
+
+Se você tem:
+- **Folder ID:** `1ceDM-gzlKY2lFqqnoCL1M5L0lM-UuB7S`
+- **Project ID:** `wedding-site-468321`
+
+Siga estes passos:
+
+1. **Obtenha a API Key:**
+   - Acesse https://console.cloud.google.com
+   - Selecione o projeto `wedding-site-468321`
+   - Vá em "APIs & Services" → "Credentials"
+   - Crie uma API Key e restrinja para Google Drive API
+
+2. **Configure na Vercel:**
+   - Vá em seu projeto → Settings → Environment Variables
+   - Adicione:
+     ```
+     GOOGLE_API_KEY=sua_chave_gerada
+     GOOGLE_DRIVE_FOLDER_ID=1ceDM-gzlKY2lFqqnoCL1M5L0lM-UuB7S
+     NEXT_PUBLIC_GOOGLE_DRIVE_SHARE_URL=https://drive.google.com/drive/folders/1ceDM-gzlKY2lFqqnoCL1M5L0lM-UuB7S
+     ```
+
+3. **Redeploy:**
+   - Faça um novo deploy ou use "Redeploy" na Vercel
+
 ## Configuração
 
 ### 1. Instalar dependências
@@ -74,17 +118,77 @@ Este projeto está otimizado para deploy na [Vercel](https://vercel.com).
 
 ### Passos para Deploy
 
-1. **Conecte seu repositório** no Vercel
-2. **Configure as variáveis de ambiente** no painel da Vercel:
-   - `GOOGLE_API_KEY`
-   - `GOOGLE_DRIVE_FOLDER_ID`
-   - `NEXT_PUBLIC_GOOGLE_DRIVE_SHARE_URL`
+#### 1. Conecte seu repositório no Vercel
 
-3. **Importante**: Certifique-se de que o Framework Preset está configurado como "Next.js" nas configurações do projeto
-   - Vá em Project Settings > General > Framework Preset
-   - Selecione "Next.js"
-   - **NÃO configure um Output Directory customizado** - deixe em branco
-   - A Vercel detecta automaticamente a saída do Next.js
+Faça login na Vercel e importe seu repositório GitHub.
+
+#### 2. Configure as Variáveis de Ambiente
+
+⚠️ **IMPORTANTE:** As variáveis de ambiente devem ser configuradas **NA VERCEL**, não no código!
+
+Vá em **Project Settings → Environment Variables** e adicione:
+
+##### Exemplo de Configuração:
+
+```
+GOOGLE_API_KEY=sua_chave_api_aqui
+GOOGLE_DRIVE_FOLDER_ID=1ceDM-gzlKY2lFqqnoCL1M5L0lM-UuB7S
+NEXT_PUBLIC_GOOGLE_DRIVE_SHARE_URL=https://drive.google.com/drive/folders/1ceDM-gzlKY2lFqqnoCL1M5L0lM-UuB7S
+```
+
+**Como obter cada valor:**
+
+**a) `GOOGLE_API_KEY`** - Chave de API do Google Cloud:
+1. Acesse o [Google Cloud Console](https://console.cloud.google.com)
+2. Selecione seu projeto (ex: `wedding-site-468321`)
+3. Vá em "APIs & Services" → "Credentials"
+4. Clique em "Create Credentials" → "API Key"
+5. **Importante:** Restrinja a chave para usar apenas a "Google Drive API"
+6. Copie a chave gerada e cole na Vercel como valor de `GOOGLE_API_KEY`
+
+**b) `GOOGLE_DRIVE_FOLDER_ID`** - ID da pasta compartilhada:
+1. Abra a pasta no Google Drive
+2. Copie o ID da URL: `https://drive.google.com/drive/folders/SEU_ID_AQUI`
+3. Exemplo: Se a URL é `.../folders/1ceDM-gzlKY2lFqqnoCL1M5L0lM-UuB7S`, o ID é `1ceDM-gzlKY2lFqqnoCL1M5L0lM-UuB7S`
+4. Cole este ID na Vercel como valor de `GOOGLE_DRIVE_FOLDER_ID`
+
+**c) `NEXT_PUBLIC_GOOGLE_DRIVE_SHARE_URL`** - URL completa da pasta:
+1. Use a URL completa da pasta: `https://drive.google.com/drive/folders/SEU_ID_AQUI`
+2. Esta URL será usada no QR Code para os convidados compartilharem fotos
+3. Cole a URL completa na Vercel como valor de `NEXT_PUBLIC_GOOGLE_DRIVE_SHARE_URL`
+
+**⚠️ Lembre-se:**
+- Configure estas variáveis em **Production**, **Preview** e **Development** na Vercel
+- NÃO adicione estas variáveis diretamente no código ou no repositório Git
+- Após configurar, faça um novo deploy para aplicar as mudanças
+
+#### 3. Configurar Google Drive API
+
+1. Acesse o [Google Cloud Console](https://console.cloud.google.com)
+2. Selecione ou crie um projeto (ex: `wedding-site-468321`)
+3. Vá em "APIs & Services" → "Library"
+4. Procure por "Google Drive API" e clique em "Enable"
+5. Configure as permissões da pasta do Drive:
+   - Abra a pasta no Google Drive
+   - Clique em "Share" (Compartilhar)
+   - Configure para "Anyone with the link can view" (Qualquer pessoa com o link pode visualizar)
+   - Para que os convidados possam fazer upload, use "Anyone with the link can edit" (Qualquer pessoa com o link pode editar)
+
+#### 4. Verificar Framework Preset
+
+**Importante**: Certifique-se de que o Framework Preset está configurado como "Next.js" nas configurações do projeto:
+- Vá em Project Settings > General > Framework Preset
+- Selecione "Next.js"
+- **NÃO configure um Output Directory customizado** - deixe em branco
+- A Vercel detecta automaticamente a saída do Next.js
+
+#### 5. Deploy
+
+Após configurar as variáveis de ambiente:
+1. Clique em "Deploy" ou faça push para seu repositório
+2. Aguarde o build completar
+3. Acesse seu site e verifique se as fotos aparecem corretamente
+
 
 ### Solução de Problemas
 
