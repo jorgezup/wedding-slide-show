@@ -62,12 +62,10 @@ export default function SlideshowPage() {
       
       // Change content after fade-out completes
       const contentTimeout = setTimeout(() => {
-        activeTimeouts.delete(contentTimeout);
         setCurrentIndex((prev) => (prev + 1) % photos.length);
         
         // Start fade-in after a small delay to let React render new content
         const fadeInTimeout = setTimeout(() => {
-          activeTimeouts.delete(fadeInTimeout);
           setIsTransitioning(false);
         }, FADE_IN_DELAY);
         activeTimeouts.add(fadeInTimeout);
@@ -77,9 +75,7 @@ export default function SlideshowPage() {
 
     return () => {
       clearInterval(slideInterval);
-      // Clear all pending timeouts
       activeTimeouts.forEach(timeout => clearTimeout(timeout));
-      activeTimeouts.clear();
     };
   }, [photos.length]);
 
