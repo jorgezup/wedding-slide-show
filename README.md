@@ -88,7 +88,7 @@ Preencha as variáveis:
 
 #### Configuração de Permissões do Google Drive
 
-**IMPORTANTE:** Configure sua pasta do Google Drive com permissão **"Qualquer pessoa com o link pode EDITAR"**
+**IMPORTANTE:** Configure sua pasta do Google Drive com permissão **"Qualquer pessoa com o link pode editar"**
 
 - ✅ A **API Key** é usada pelo slideshow para **LER** as fotos (funciona independente da permissão)
 - ✅ O **link compartilhado** é usado pelos convidados para **ENVIAR** fotos via QR Code (precisa de permissão de Editor)
@@ -96,8 +96,6 @@ Preencha as variáveis:
 **Dica de Segurança:**
 - Durante o evento: Use permissão "Editor" para permitir uploads
 - Após o evento: Mude para "Visualizador" para proteger as fotos
-
-#### Passos para Configurar:
 
 #### Passos para Configurar:
 

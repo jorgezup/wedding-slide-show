@@ -217,7 +217,7 @@ export default function SlideshowPage() {
 
             {/* QR Code - Centered and Small */}
             <div className="flex flex-col items-center justify-center">
-              <div className="rounded-lg bg-white p-2 mb-2 flex items-center justify-center">
+              <div className="flex items-center justify-center rounded-lg bg-white p-2 mb-2">
                 <QRCodeSVG
                   value={GOOGLE_DRIVE_SHARE_URL}
                   size={100}
