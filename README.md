@@ -237,3 +237,38 @@ Se o deploy foi concluído com sucesso, mas você está recebendo erro 404 ao ac
    - Faça um novo deploy
 
 **Causa Comum:** Este erro geralmente ocorre quando o projeto foi inicialmente configurado com o framework preset incorreto. A solução é garantir que a Vercel reconheça o projeto como uma aplicação Next.js, não como um site estático genérico.
+
+#### Erro 400 do Google Drive API
+
+Se você está recebendo erro 400 ao tentar carregar fotos do Google Drive:
+
+**Sintomas:**
+- Console mostra: `Error fetching photos from Google Drive: Error: Google Drive API error: 400`
+- Fotos não aparecem no slideshow
+- Modo demo é ativado automaticamente
+
+**Solução:**
+
+Este erro foi corrigido na versão mais recente do código. Certifique-se de:
+
+1. **Usar a versão mais recente do código:**
+   - O código agora inclui o parâmetro `corpora=user` necessário para a API
+   - Faça um novo deploy com a versão atualizada
+
+2. **Verificar suas variáveis de ambiente:**
+   - Confirme que `GOOGLE_API_KEY` está configurada corretamente
+   - Verifique se `GOOGLE_DRIVE_FOLDER_ID` é o ID correto da pasta
+   - Teste se a API Key tem permissões para acessar a Google Drive API
+
+3. **Verificar permissões da API:**
+   - Acesse o [Google Cloud Console](https://console.cloud.google.com)
+   - Vá em "APIs & Services" → "Library"
+   - Confirme que "Google Drive API" está **habilitada**
+   - Vá em "Credentials" e verifique se sua API Key está **ativa**
+
+4. **Verificar permissões da pasta:**
+   - Abra a pasta no Google Drive
+   - Verifique se ela está compartilhada (pelo menos como "Anyone with the link can view")
+   - Confirme que o ID da pasta está correto na variável de ambiente
+
+**Causa Técnica:** A versão anterior do código não incluía o parâmetro `corpora=user` na requisição da API, que é obrigatório quando se usa `orderBy=createdTime`. A versão atual do código já inclui este parâmetro.
