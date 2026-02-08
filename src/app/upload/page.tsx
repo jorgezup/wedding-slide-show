@@ -25,6 +25,9 @@ export default function UploadPage() {
       reader.onloadend = () => {
         setPreviewUrl(reader.result as string);
       };
+      reader.onerror = () => {
+        setMessage({ type: "error", text: "Erro ao carregar preview da imagem" });
+      };
       reader.readAsDataURL(file);
     }
   };

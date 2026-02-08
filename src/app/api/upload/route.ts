@@ -30,7 +30,9 @@ async function getDriveClient() {
   return drive;
 }
 
-// Convert Web ReadableStream to Node.js Readable
+// Convert Web ReadableStream to Node.js Readable stream
+// This is necessary because Next.js uses Web Streams API (standard for modern web)
+// but googleapis library requires Node.js streams
 async function webStreamToNodeStream(webStream: ReadableStream): Promise<Readable> {
   const reader = webStream.getReader();
   const readable = new Readable({
@@ -124,10 +126,15 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error uploading file:", error);
+    
+    // Return a generic error message to the client to avoid exposing internal details
+    const errorMessage = error instanceof Error && error.message.includes("GOOGLE_SERVICE_ACCOUNT_CREDENTIALS")
+      ? "Service account not configured properly"
+      : "Failed to upload file";
+    
     return NextResponse.json(
       {
-        error: "Failed to upload file",
-        details: error instanceof Error ? error.message : "Unknown error",
+        error: errorMessage,
       },
       { status: 500 }
     );
