@@ -36,7 +36,7 @@ export default function Home() {
 
       {/* Description */}
       <p className="mb-10 max-w-md text-center text-lg text-amber-800 sm:text-xl">
-        Compartilhe sua foto conosco
+        Compartilhe suas fotos conosco escaneando o QR Code ou enviando diretamente pelo site
       </p>
 
       {/* QR Code */}
@@ -54,13 +54,21 @@ export default function Home() {
         Escaneie o QR Code para enviar suas fotos do casamento
       </p>
 
-      {/* Link to slideshow */}
-      <a
-        href="/slideshow"
-        className="rounded-full bg-amber-800 px-8 py-3 text-lg font-medium text-white shadow transition-colors hover:bg-amber-900"
-      >
-        Ver Slideshow
-      </a>
+      {/* Links */}
+      <div className="flex flex-col gap-4 sm:flex-row">
+        <a
+          href="/upload"
+          className="rounded-full bg-amber-800 px-8 py-3 text-lg font-medium text-white shadow transition-colors hover:bg-amber-900"
+        >
+          Enviar Foto
+        </a>
+        <a
+          href="/slideshow"
+          className="rounded-full border-2 border-amber-800 px-8 py-3 text-lg font-medium text-amber-800 shadow transition-colors hover:bg-amber-800 hover:text-white"
+        >
+          Ver Slideshow
+        </a>
+      </div>
     </div>
   );
 }
