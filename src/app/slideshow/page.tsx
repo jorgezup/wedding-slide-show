@@ -63,7 +63,14 @@ export default function SlideshowPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-black">
         <div className="text-center">
-          <div className="mb-4 text-6xl">💍</div>
+          <div className="mb-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/eiva-jorge-home.jpg"
+              alt="Eiva e Jorge"
+              className="mx-auto h-32 w-32 rounded-full object-cover"
+            />
+          </div>
           <p className="text-xl text-white/70">Carregando fotos...</p>
         </div>
       </div>

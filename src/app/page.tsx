@@ -11,9 +11,12 @@ export default function Home() {
     <div className="flex min-h-screen flex-col items-center justify-center bg-[#fdf6f0] px-4 py-12">
       {/* Wedding Photo */}
       <div className="mb-8 h-64 w-64 overflow-hidden rounded-full border-4 border-amber-700/30 shadow-lg sm:h-80 sm:w-80">
-        <div className="flex h-full w-full items-center justify-center bg-amber-100 text-6xl">
-          💍
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/eiva-jorge-home.jpg"
+          alt="Eiva e Jorge"
+          className="h-full w-full object-cover"
+        />
       </div>
 
       {/* Title */}
