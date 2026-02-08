@@ -57,8 +57,10 @@ export default function SlideshowPage() {
       setIsTransitioning(true);
       setTimeout(() => {
         setCurrentIndex((prev) => (prev + 1) % photos.length);
-        setIsTransitioning(false);
       }, 1000);
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 1050);
     }, SLIDE_DURATION);
 
     return () => clearInterval(slideInterval);
