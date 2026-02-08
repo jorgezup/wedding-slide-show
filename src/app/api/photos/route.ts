@@ -26,14 +26,16 @@ export async function GET() {
 
   try {
     const query = `'${GOOGLE_DRIVE_FOLDER_ID}' in parents and mimeType contains 'image/' and trashed = false`;
-    const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&key=${GOOGLE_API_KEY}&fields=files(id,name,mimeType)&orderBy=createdTime desc&pageSize=100`;
+    const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&key=${GOOGLE_API_KEY}&fields=files(id,name,mimeType)&orderBy=createdTime desc&pageSize=100&corpora=user`;
 
     const response = await fetch(url, {
       next: { revalidate: 10 },
     });
 
     if (!response.ok) {
-      throw new Error(`Google Drive API error: ${response.status}`);
+      const errorBody = await response.text();
+      console.error(`Google Drive API error: ${response.status}`, errorBody);
+      throw new Error(`Google Drive API error: ${response.status} - ${errorBody}`);
     }
 
     const data: DriveListResponse = await response.json();
