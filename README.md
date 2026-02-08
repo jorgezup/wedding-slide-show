@@ -86,8 +86,6 @@ Preencha as variáveis:
 
 ### 3. Configurar Google Drive
 
-### 3. Configurar Google Drive
-
 1. Crie uma pasta no Google Drive
 2. Compartilhe a pasta com permissão para "Qualquer pessoa com o link pode editar"
 3. Copie o ID da pasta (parte da URL após `/folders/`)
