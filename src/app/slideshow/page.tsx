@@ -55,25 +55,31 @@ export default function SlideshowPage() {
   useEffect(() => {
     if (photos.length <= 1) return;
 
-    const timeouts: NodeJS.Timeout[] = [];
+    const activeTimeouts = new Set<NodeJS.Timeout>();
 
     const slideInterval = setInterval(() => {
       setIsTransitioning(true);
       
+      // Change content after fade-out completes
       const contentTimeout = setTimeout(() => {
+        activeTimeouts.delete(contentTimeout);
         setCurrentIndex((prev) => (prev + 1) % photos.length);
+        
+        // Start fade-in after a small delay to let React render new content
+        const fadeInTimeout = setTimeout(() => {
+          activeTimeouts.delete(fadeInTimeout);
+          setIsTransitioning(false);
+        }, FADE_IN_DELAY);
+        activeTimeouts.add(fadeInTimeout);
       }, FADE_OUT_DURATION);
-      timeouts.push(contentTimeout);
-      
-      const fadeInTimeout = setTimeout(() => {
-        setIsTransitioning(false);
-      }, FADE_OUT_DURATION + FADE_IN_DELAY);
-      timeouts.push(fadeInTimeout);
+      activeTimeouts.add(contentTimeout);
     }, SLIDE_DURATION);
 
     return () => {
       clearInterval(slideInterval);
-      timeouts.forEach(timeout => clearTimeout(timeout));
+      // Clear all pending timeouts
+      activeTimeouts.forEach(timeout => clearTimeout(timeout));
+      activeTimeouts.clear();
     };
   }, [photos.length]);
 
