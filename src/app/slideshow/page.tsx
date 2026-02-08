@@ -14,6 +14,8 @@ interface Photo {
 
 const POLL_INTERVAL = 15000; // Poll every 15 seconds for new photos
 const SLIDE_DURATION = 6000; // Each slide shows for 6 seconds
+const FADE_OUT_DURATION = 1000; // Fade out duration in milliseconds
+const FADE_IN_DELAY = 50; // Delay before fade-in to allow React to render new content
 const GOOGLE_DRIVE_SHARE_URL =
   process.env.NEXT_PUBLIC_GOOGLE_DRIVE_SHARE_URL ||
   "https://drive.google.com/drive/folders/YOUR_FOLDER_ID";
@@ -53,17 +55,26 @@ export default function SlideshowPage() {
   useEffect(() => {
     if (photos.length <= 1) return;
 
+    const timeouts: NodeJS.Timeout[] = [];
+
     const slideInterval = setInterval(() => {
       setIsTransitioning(true);
-      setTimeout(() => {
+      
+      const contentTimeout = setTimeout(() => {
         setCurrentIndex((prev) => (prev + 1) % photos.length);
-      }, 1000);
-      setTimeout(() => {
+      }, FADE_OUT_DURATION);
+      timeouts.push(contentTimeout);
+      
+      const fadeInTimeout = setTimeout(() => {
         setIsTransitioning(false);
-      }, 1050);
+      }, FADE_OUT_DURATION + FADE_IN_DELAY);
+      timeouts.push(fadeInTimeout);
     }, SLIDE_DURATION);
 
-    return () => clearInterval(slideInterval);
+    return () => {
+      clearInterval(slideInterval);
+      timeouts.forEach(timeout => clearTimeout(timeout));
+    };
   }, [photos.length]);
 
   if (loading) {
