@@ -88,7 +88,9 @@ Este projeto está otimizado para deploy na [Vercel](https://vercel.com).
 
 ### Solução de Problemas
 
-Se você receber o erro `"No Output Directory named 'public' found"`:
+#### Erro: "No Output Directory named 'public' found"
+
+Se você receber este erro:
 
 1. Verifique nas configurações do projeto na Vercel (Project Settings > General)
 2. Confirme que "Framework Preset" está definido como "Next.js"
@@ -96,3 +98,38 @@ Se você receber o erro `"No Output Directory named 'public' found"`:
 4. Para projetos Next.js com SSR e API routes (como este), a Vercel gerencia automaticamente a saída - não é necessário configurar manualmente
 
 O erro geralmente ocorre quando o projeto está configurado incorretamente como um site estático ao invés de uma aplicação Next.js.
+
+#### Erro 404 nas Páginas Após Deploy Bem-Sucedido
+
+Se o deploy foi concluído com sucesso, mas você está recebendo erro 404 ao acessar `/` ou `/slideshow`:
+
+1. **Verifique as Configurações do Projeto na Vercel:**
+   - Acesse seu projeto na Vercel → Settings → General
+   - Confirme que **"Framework Preset"** está definido como **"Next.js"** (não "Other" ou "Vite")
+   - Verifique se **"Root Directory"** está vazio ou definido como `.` (raiz do projeto)
+   - Confirme que **"Output Directory"** está vazio (Vercel gerencia automaticamente para Next.js)
+
+2. **Force um Novo Deploy:**
+   - Após corrigir as configurações, faça um novo commit (pode ser vazio):
+     ```bash
+     git commit --allow-empty -m "Trigger redeploy"
+     git push
+     ```
+   - Ou use o botão "Redeploy" no painel da Vercel
+
+3. **Verifique os Logs de Build:**
+   - Na aba "Deployments", clique no deploy mais recente
+   - Verifique se o build mostra as rotas corretamente:
+     ```
+     Route (app)
+     ┌ ○ /
+     ├ ƒ /api/photos
+     └ ○ /slideshow
+     ```
+
+4. **Limpe o Cache:**
+   - Às vezes o cache da Vercel pode causar problemas
+   - Vá em Settings → General → Clear Build Cache
+   - Faça um novo deploy
+
+**Causa Comum:** Este erro geralmente ocorre quando o projeto foi inicialmente configurado com o framework preset incorreto. A solução é garantir que a Vercel reconheça o projeto como uma aplicação Next.js, não como um site estático genérico.
