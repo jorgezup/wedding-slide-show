@@ -24,6 +24,7 @@ export default function SlideshowPage() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showQRModal, setShowQRModal] = useState(true);
 
   const fetchPhotos = useCallback(async () => {
     try {
@@ -188,23 +189,51 @@ export default function SlideshowPage() {
         </div>
       )}
 
-      {/* QR Code Modal - Bottom Right */}
-      <div className="absolute bottom-6 right-6 z-20 rounded-2xl border border-white/20 bg-black/80 p-4 shadow-2xl backdrop-blur-md">
-        <div className="text-center">
-          <div className="mb-3 rounded-xl bg-white p-3">
-            <QRCodeSVG
-              value={GOOGLE_DRIVE_SHARE_URL}
-              size={120}
-              level="H"
-              fgColor="#000000"
-              bgColor="#ffffff"
-            />
+      {/* QR Code Modal - Small Bottom Right Corner */}
+      {showQRModal && (
+        <div className="absolute bottom-6 right-6 z-20">
+          <div className="relative rounded-xl border border-white/20 bg-black/90 p-3 shadow-2xl backdrop-blur-md">
+            {/* Close Button */}
+            <button
+              onClick={() => setShowQRModal(false)}
+              className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-black hover:bg-white transition-colors shadow-lg"
+              aria-label="Fechar"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.5}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+
+            {/* QR Code - Centered and Small */}
+            <div className="flex flex-col items-center justify-center">
+              <div className="rounded-lg bg-white p-2 mb-2 flex items-center justify-center">
+                <QRCodeSVG
+                  value={GOOGLE_DRIVE_SHARE_URL}
+                  size={100}
+                  level="H"
+                  fgColor="#000000"
+                  bgColor="#ffffff"
+                  className="block"
+                />
+              </div>
+              <p className="text-xs font-medium text-white/90 text-center">
+                Compartilhe fotos
+              </p>
+            </div>
           </div>
-          <p className="text-sm font-light text-white/90">
-            Compartilhe sua foto conosco
-          </p>
         </div>
-      </div>
+      )}
     </div>
   );
 }

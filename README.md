@@ -5,7 +5,7 @@ Slideshow de fotos em tempo real para casamento. Os convidados compartilham foto
 ## Funcionalidades
 
 - **Página Inicial**: Título "Eiva e Jorge 14/02/2026", QR Code para compartilhamento
-- **Upload de Fotos**: Página dedicada para envio direto de fotos ao Google Drive
+- **QR Code**: Acesso direto à pasta compartilhada do Google Drive para upload de fotos pelos convidados
 - **Slideshow**: Exibição automática de fotos com transições suaves
 - **Tempo Real**: Novas fotos aparecem automaticamente a cada 15 segundos
 - **Google Drive**: Integração com pasta compartilhada do Google Drive
@@ -86,74 +86,26 @@ Preencha as variáveis:
 
 ### 3. Configurar Google Drive
 
-#### Para Visualização de Fotos (Obrigatório)
+#### Configuração de Permissões do Google Drive
+
+**IMPORTANTE:** Configure sua pasta do Google Drive com permissão **"Qualquer pessoa com o link pode EDITAR"**
+
+- ✅ A **API Key** é usada pelo slideshow para **LER** as fotos (funciona independente da permissão)
+- ✅ O **link compartilhado** é usado pelos convidados para **ENVIAR** fotos via QR Code (precisa de permissão de Editor)
+
+**Dica de Segurança:**
+- Durante o evento: Use permissão "Editor" para permitir uploads
+- Após o evento: Mude para "Visualizador" para proteger as fotos
+
+#### Passos para Configurar:
+
+#### Passos para Configurar:
 
 1. Crie uma pasta no Google Drive
 2. Compartilhe a pasta com permissão para "Qualquer pessoa com o link pode editar"
 3. Copie o ID da pasta (parte da URL após `/folders/`)
 4. Ative a API do Google Drive no [Google Cloud Console](https://console.cloud.google.com)
 5. Crie uma chave de API
-
-#### Para Upload de Fotos via Site (Opcional)
-
-Para permitir que os convidados façam upload diretamente pelo site (além do QR Code), você precisa configurar uma Service Account:
-
-**Por que Service Account?**
-- Uma API Key normal só permite **ler** arquivos públicos do Google Drive
-- Para **enviar/criar** arquivos, é necessário autenticação OAuth 2.0 ou Service Account
-- Service Account é ideal para aplicações server-side como esta
-
-**Passos para Configurar:**
-
-1. **Criar Service Account no Google Cloud Console:**
-   - Acesse [Google Cloud Console](https://console.cloud.google.com)
-   - Selecione seu projeto
-   - Vá em **"APIs & Services" → "Credentials"**
-   - Clique em **"Create Credentials" → "Service Account"**
-   - Dê um nome (ex: "wedding-upload-service")
-   - Clique em **"Create and Continue"**
-   - Pule as permissões opcionais e clique em **"Done"**
-
-2. **Gerar Chave JSON da Service Account:**
-   - Na lista de Service Accounts, clique na que você acabou de criar
-   - Vá na aba **"Keys"**
-   - Clique em **"Add Key" → "Create new key"**
-   - Escolha **"JSON"**
-   - Baixe o arquivo JSON (guarde em local seguro!)
-
-3. **Compartilhar Pasta do Google Drive com a Service Account:**
-   - Abra o arquivo JSON que você baixou
-   - Copie o email da service account (campo `client_email`, parecido com: `nome@projeto.iam.gserviceaccount.com`)
-   - Abra sua pasta do Google Drive
-   - Clique em **"Share" (Compartilhar)**
-   - Cole o email da service account
-   - Dê permissão de **"Editor"**
-   - Clique em **"Send"**
-
-4. **Configurar Variável de Ambiente:**
-   - Abra o arquivo JSON da service account
-   - Copie **TODO** o conteúdo do arquivo
-   - Adicione na variável `GOOGLE_SERVICE_ACCOUNT_CREDENTIALS` (veja seção abaixo)
-   - **IMPORTANTE:** Na Vercel, você pode colar o JSON completo diretamente na variável de ambiente
-
-**Variáveis de Ambiente Necessárias:**
-
-Com Service Account (upload habilitado):
-```bash
-GOOGLE_API_KEY=sua_chave_api_aqui
-GOOGLE_DRIVE_FOLDER_ID=seu_folder_id_aqui
-NEXT_PUBLIC_GOOGLE_DRIVE_SHARE_URL=https://drive.google.com/drive/folders/seu_folder_id_aqui
-GOOGLE_SERVICE_ACCOUNT_CREDENTIALS={"type":"service_account","project_id":"...","private_key":"..."}
-```
-
-Sem Service Account (apenas visualização, sem upload via site):
-```bash
-GOOGLE_API_KEY=sua_chave_api_aqui
-GOOGLE_DRIVE_FOLDER_ID=seu_folder_id_aqui
-NEXT_PUBLIC_GOOGLE_DRIVE_SHARE_URL=https://drive.google.com/drive/folders/seu_folder_id_aqui
-```
-
-**Nota:** Se você não configurar a Service Account, o site funcionará normalmente mas a página `/upload` exibirá uma mensagem de erro informando que o upload não está disponível. Os convidados ainda poderão enviar fotos via QR Code (Google Drive diretamente).
 
 ### 4. Executar
 
@@ -163,7 +115,6 @@ npm run dev
 
 Acesse:
 - Página inicial: [http://localhost:3000](http://localhost:3000)
-- Upload de fotos: [http://localhost:3000/upload](http://localhost:3000/upload)
 - Slideshow: [http://localhost:3000/slideshow](http://localhost:3000/slideshow)
 
 ## Modo Demo
@@ -195,19 +146,11 @@ Vá em **Project Settings → Environment Variables** e adicione:
 
 ##### Exemplo de Configuração:
 
-**Configuração Básica (apenas visualização):**
+**Variáveis de Ambiente Necessárias:**
 ```
 GOOGLE_API_KEY=sua_chave_api_aqui
 GOOGLE_DRIVE_FOLDER_ID=seu_folder_id_aqui
 NEXT_PUBLIC_GOOGLE_DRIVE_SHARE_URL=https://drive.google.com/drive/folders/seu_folder_id_aqui
-```
-
-**Configuração Completa (com upload via site):**
-```
-GOOGLE_API_KEY=sua_chave_api_aqui
-GOOGLE_DRIVE_FOLDER_ID=seu_folder_id_aqui
-NEXT_PUBLIC_GOOGLE_DRIVE_SHARE_URL=https://drive.google.com/drive/folders/seu_folder_id_aqui
-GOOGLE_SERVICE_ACCOUNT_CREDENTIALS={"type":"service_account",...}
 ```
 
 **Como obter cada valor:**
@@ -230,18 +173,6 @@ GOOGLE_SERVICE_ACCOUNT_CREDENTIALS={"type":"service_account",...}
 1. Use a URL completa da pasta: `https://drive.google.com/drive/folders/SEU_ID_AQUI`
 2. Esta URL será usada no QR Code para os convidados compartilharem fotos
 3. Cole a URL completa na Vercel como valor de `NEXT_PUBLIC_GOOGLE_DRIVE_SHARE_URL`
-
-**d) `GOOGLE_SERVICE_ACCOUNT_CREDENTIALS`** - JSON da Service Account (OPCIONAL):
-1. Se você deseja habilitar upload via site (página `/upload`), siga os passos da seção "Configurar Google Drive → Para Upload de Fotos via Site"
-2. Abra o arquivo JSON da service account que você baixou
-3. Copie **TODO** o conteúdo do arquivo JSON
-4. Na Vercel, cole o JSON completo como valor de `GOOGLE_SERVICE_ACCOUNT_CREDENTIALS`
-5. **IMPORTANTE:** Certifique-se de que a pasta do Google Drive está compartilhada com o email da service account
-
-⚠️ **Nota sobre Service Account:**
-- Se você **NÃO** configurar `GOOGLE_SERVICE_ACCOUNT_CREDENTIALS`, o site funcionará normalmente mas a página `/upload` exibirá uma mensagem de erro
-- Os convidados ainda poderão enviar fotos via QR Code (acessando o Google Drive diretamente)
-- Configure a service account apenas se quiser permitir upload direto pelo site
 
 **⚠️ Lembre-se:**
 - Configure estas variáveis em **Production**, **Preview** e **Development** na Vercel
