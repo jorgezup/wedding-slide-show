@@ -67,3 +67,32 @@ Se as credenciais do Google Drive não estiverem configuradas, o app funciona em
 npm run build
 npm start
 ```
+
+## Deploy na Vercel
+
+Este projeto está otimizado para deploy na [Vercel](https://vercel.com).
+
+### Passos para Deploy
+
+1. **Conecte seu repositório** no Vercel
+2. **Configure as variáveis de ambiente** no painel da Vercel:
+   - `GOOGLE_API_KEY`
+   - `GOOGLE_DRIVE_FOLDER_ID`
+   - `NEXT_PUBLIC_GOOGLE_DRIVE_SHARE_URL`
+
+3. **Importante**: Certifique-se de que o Framework Preset está configurado como "Next.js" nas configurações do projeto
+   - Vá em Project Settings > General > Framework Preset
+   - Selecione "Next.js"
+   - **NÃO configure um Output Directory customizado** - deixe em branco
+   - A Vercel detecta automaticamente a saída do Next.js
+
+### Solução de Problemas
+
+Se você receber o erro `"No Output Directory named 'public' found"`:
+
+1. Verifique nas configurações do projeto na Vercel (Project Settings > General)
+2. Confirme que "Framework Preset" está definido como "Next.js"
+3. Verifique se "Output Directory" está vazio ou não definido
+4. Para projetos Next.js com SSR e API routes (como este), a Vercel gerencia automaticamente a saída - não é necessário configurar manualmente
+
+O erro geralmente ocorre quando o projeto está configurado incorretamente como um site estático ao invés de uma aplicação Next.js.
