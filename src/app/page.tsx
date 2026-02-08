@@ -36,14 +36,14 @@ export default function Home() {
 
       {/* Description */}
       <p className="mb-10 max-w-md text-center text-lg text-amber-800 sm:text-xl">
-        Compartilhe suas fotos conosco escaneando o QR Code ou enviando diretamente pelo site
+        Escaneie o QR Code abaixo para acessar nossa pasta do Google Drive e compartilhar suas fotos
       </p>
 
       {/* QR Code */}
       <div className="mb-6 rounded-2xl border border-amber-700/20 bg-white p-6 shadow-md">
         <QRCodeSVG
           value={GOOGLE_DRIVE_SHARE_URL}
-          size={200}
+          size={240}
           level="H"
           fgColor="#78350f"
           bgColor="#ffffff"
@@ -51,20 +51,14 @@ export default function Home() {
       </div>
 
       <p className="mb-12 max-w-sm text-center text-sm text-amber-600">
-        Escaneie o QR Code para enviar suas fotos do casamento
+        Você será direcionado para nossa pasta compartilhada do Google Drive, onde poderá enviar suas fotos diretamente
       </p>
 
       {/* Links */}
       <div className="flex flex-col gap-4 sm:flex-row">
         <a
-          href="/upload"
-          className="rounded-full bg-amber-800 px-8 py-3 text-lg font-medium text-white shadow transition-colors hover:bg-amber-900"
-        >
-          Enviar Foto
-        </a>
-        <a
           href="/slideshow"
-          className="rounded-full border-2 border-amber-800 px-8 py-3 text-lg font-medium text-amber-800 shadow transition-colors hover:bg-amber-800 hover:text-white"
+          className="rounded-full bg-amber-800 px-8 py-3 text-lg font-medium text-white shadow transition-colors hover:bg-amber-900"
         >
           Ver Slideshow
         </a>

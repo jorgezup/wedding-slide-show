@@ -24,6 +24,7 @@ export default function SlideshowPage() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showQRModal, setShowQRModal] = useState(true);
 
   const fetchPhotos = useCallback(async () => {
     try {
@@ -188,23 +189,53 @@ export default function SlideshowPage() {
         </div>
       )}
 
-      {/* QR Code Modal - Bottom Right */}
-      <div className="absolute bottom-6 right-6 z-20 rounded-2xl border border-white/20 bg-black/80 p-4 shadow-2xl backdrop-blur-md">
-        <div className="text-center">
-          <div className="mb-3 rounded-xl bg-white p-3">
-            <QRCodeSVG
-              value={GOOGLE_DRIVE_SHARE_URL}
-              size={120}
-              level="H"
-              fgColor="#000000"
-              bgColor="#ffffff"
-            />
+      {/* QR Code Modal */}
+      {showQRModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="relative rounded-2xl border border-white/20 bg-black/90 p-8 shadow-2xl backdrop-blur-md">
+            {/* Close Button */}
+            <button
+              onClick={() => setShowQRModal(false)}
+              className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors"
+              aria-label="Fechar"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+
+            {/* QR Code Content */}
+            <div className="text-center">
+              <div className="mb-4 rounded-xl bg-white p-4">
+                <QRCodeSVG
+                  value={GOOGLE_DRIVE_SHARE_URL}
+                  size={180}
+                  level="H"
+                  fgColor="#000000"
+                  bgColor="#ffffff"
+                />
+              </div>
+              <p className="text-lg font-medium text-white mb-1">
+                Compartilhe suas fotos
+              </p>
+              <p className="text-sm text-white/70">
+                Escaneie o QR Code para acessar o Google Drive
+              </p>
+            </div>
           </div>
-          <p className="text-sm font-light text-white/90">
-            Compartilhe sua foto conosco
-          </p>
         </div>
-      </div>
+      )}
     </div>
   );
 }
