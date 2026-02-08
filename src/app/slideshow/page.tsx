@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import { QRCodeSVG } from "qrcode.react";
 
 interface Photo {
   id: string;
@@ -13,6 +14,9 @@ interface Photo {
 
 const POLL_INTERVAL = 15000; // Poll every 15 seconds for new photos
 const SLIDE_DURATION = 6000; // Each slide shows for 6 seconds
+const GOOGLE_DRIVE_SHARE_URL =
+  process.env.NEXT_PUBLIC_GOOGLE_DRIVE_SHARE_URL ||
+  "https://drive.google.com/drive/folders/YOUR_FOLDER_ID";
 
 export default function SlideshowPage() {
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -183,6 +187,24 @@ export default function SlideshowPage() {
           ⚠ {error}
         </div>
       )}
+
+      {/* QR Code Modal - Bottom Right */}
+      <div className="absolute bottom-6 right-6 z-20 rounded-2xl border border-white/20 bg-black/80 p-4 shadow-2xl backdrop-blur-md">
+        <div className="text-center">
+          <div className="mb-3 rounded-xl bg-white p-3">
+            <QRCodeSVG
+              value={GOOGLE_DRIVE_SHARE_URL}
+              size={120}
+              level="H"
+              fgColor="#000000"
+              bgColor="#ffffff"
+            />
+          </div>
+          <p className="text-sm font-light text-white/90">
+            Compartilhe sua foto conosco
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
