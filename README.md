@@ -38,14 +38,14 @@ As variáveis de ambiente (API Key, Folder ID, etc.) devem ser configuradas dire
 ### Já tenho o ID da pasta e do projeto Google Cloud, e agora?
 
 Se você tem:
-- **Folder ID:** `1ceDM-gzlKY2lFqqnoCL1M5L0lM-UuB7S`
-- **Project ID:** `wedding-site-468321`
+- **Folder ID:** Como `1ceDM-gzlKY2lFqqnoCL1M5L0lM-UuB7S` (exemplo)
+- **Project ID:** Como `wedding-site-468321` (exemplo)
 
 Siga estes passos:
 
 1. **Obtenha a API Key:**
    - Acesse https://console.cloud.google.com
-   - Selecione o projeto `wedding-site-468321`
+   - Selecione seu projeto (ex: `seu-projeto-id`)
    - Vá em "APIs & Services" → "Credentials"
    - Crie uma API Key e restrinja para Google Drive API
 
@@ -54,8 +54,8 @@ Siga estes passos:
    - Adicione:
      ```
      GOOGLE_API_KEY=sua_chave_gerada
-     GOOGLE_DRIVE_FOLDER_ID=1ceDM-gzlKY2lFqqnoCL1M5L0lM-UuB7S
-     NEXT_PUBLIC_GOOGLE_DRIVE_SHARE_URL=https://drive.google.com/drive/folders/1ceDM-gzlKY2lFqqnoCL1M5L0lM-UuB7S
+     GOOGLE_DRIVE_FOLDER_ID=seu_folder_id_aqui
+     NEXT_PUBLIC_GOOGLE_DRIVE_SHARE_URL=https://drive.google.com/drive/folders/seu_folder_id_aqui
      ```
 
 3. **Redeploy:**
@@ -132,15 +132,15 @@ Vá em **Project Settings → Environment Variables** e adicione:
 
 ```
 GOOGLE_API_KEY=sua_chave_api_aqui
-GOOGLE_DRIVE_FOLDER_ID=1ceDM-gzlKY2lFqqnoCL1M5L0lM-UuB7S
-NEXT_PUBLIC_GOOGLE_DRIVE_SHARE_URL=https://drive.google.com/drive/folders/1ceDM-gzlKY2lFqqnoCL1M5L0lM-UuB7S
+GOOGLE_DRIVE_FOLDER_ID=seu_folder_id_aqui
+NEXT_PUBLIC_GOOGLE_DRIVE_SHARE_URL=https://drive.google.com/drive/folders/seu_folder_id_aqui
 ```
 
 **Como obter cada valor:**
 
 **a) `GOOGLE_API_KEY`** - Chave de API do Google Cloud:
 1. Acesse o [Google Cloud Console](https://console.cloud.google.com)
-2. Selecione seu projeto (ex: `wedding-site-468321`)
+2. Selecione seu projeto (ex: `seu-projeto-google-cloud`)
 3. Vá em "APIs & Services" → "Credentials"
 4. Clique em "Create Credentials" → "API Key"
 5. **Importante:** Restrinja a chave para usar apenas a "Google Drive API"
@@ -149,7 +149,7 @@ NEXT_PUBLIC_GOOGLE_DRIVE_SHARE_URL=https://drive.google.com/drive/folders/1ceDM-
 **b) `GOOGLE_DRIVE_FOLDER_ID`** - ID da pasta compartilhada:
 1. Abra a pasta no Google Drive
 2. Copie o ID da URL: `https://drive.google.com/drive/folders/SEU_ID_AQUI`
-3. Exemplo: Se a URL é `.../folders/1ceDM-gzlKY2lFqqnoCL1M5L0lM-UuB7S`, o ID é `1ceDM-gzlKY2lFqqnoCL1M5L0lM-UuB7S`
+3. Exemplo: Se a URL é `.../folders/1ABC-xyz...`, o ID é `1ABC-xyz...`
 4. Cole este ID na Vercel como valor de `GOOGLE_DRIVE_FOLDER_ID`
 
 **c) `NEXT_PUBLIC_GOOGLE_DRIVE_SHARE_URL`** - URL completa da pasta:
