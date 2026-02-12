@@ -1,0 +1,192 @@
+"use client";
+
+import { useEffect, useState, useCallback } from "react";
+import Link from "next/link";
+
+interface Photo {
+  id: string;
+  name: string;
+  url: string;
+  thumbnailUrl: string;
+  demo?: boolean;
+}
+
+const POLL_INTERVAL = 15000; // Poll every 15 seconds for new photos
+const SLIDE_DURATION = 6000; // Each slide shows for 6 seconds
+const FADE_OUT_DURATION = 1000; // Fade out duration in milliseconds
+const FADE_IN_DELAY = 50; // Delay before fade-in to allow React to render new content
+
+export default function JantarSlideshowPage() {
+  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchPhotos = useCallback(async () => {
+    try {
+      const response = await fetch("/api/jantar-photos");
+      const data = await response.json();
+      if (data.photos && data.photos.length > 0) {
+        setPhotos(data.photos);
+        setError(data.error || null);
+      }
+    } catch (err) {
+      console.error("Error fetching photos:", err);
+      setError("Erro ao carregar fotos");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Initial fetch and polling for new photos
+  useEffect(() => {
+    fetchPhotos();
+    const pollInterval = setInterval(fetchPhotos, POLL_INTERVAL);
+    return () => clearInterval(pollInterval);
+  }, [fetchPhotos]);
+
+  // Auto-advance slideshow
+  useEffect(() => {
+    if (photos.length <= 1) return;
+
+    const activeTimeouts = new Set<NodeJS.Timeout>();
+
+    const slideInterval = setInterval(() => {
+      setIsTransitioning(true);
+      
+      // Change content after fade-out completes
+      const contentTimeout = setTimeout(() => {
+        setCurrentIndex((prev) => (prev + 1) % photos.length);
+        
+        // Start fade-in after a small delay to let React render new content
+        const fadeInTimeout = setTimeout(() => {
+          setIsTransitioning(false);
+        }, FADE_IN_DELAY);
+        activeTimeouts.add(fadeInTimeout);
+      }, FADE_OUT_DURATION);
+      activeTimeouts.add(contentTimeout);
+    }, SLIDE_DURATION);
+
+    return () => {
+      clearInterval(slideInterval);
+      activeTimeouts.forEach(timeout => clearTimeout(timeout));
+    };
+  }, [photos.length]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-black">
+        <div className="text-center">
+          <p className="text-xl text-white/70">Carregando fotos...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const currentPhoto = photos[currentIndex];
+  const isDemo = currentPhoto?.demo;
+
+  return (
+    <div className="relative min-h-screen bg-black">
+      {/* Header overlay */}
+      <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/60 to-transparent p-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-light text-white/90">
+            Eiva e Jorge - Jantar{" "}
+            <span className="text-white/60">• 14/02/2026</span>
+          </h1>
+          <Link
+            href="/"
+            className="rounded-full bg-white/10 px-4 py-2 text-sm text-white/80 backdrop-blur transition hover:bg-white/20"
+          >
+            ← Início
+          </Link>
+        </div>
+      </div>
+
+      {/* Photo display */}
+      {photos.length === 0 ? (
+        <div className="flex min-h-screen flex-col items-center justify-center">
+          <div className="text-center">
+            <p className="mb-2 text-2xl font-light text-white/80">
+              Aguardando fotos...
+            </p>
+          </div>
+        </div>
+      ) : isDemo ? (
+        <div className="flex min-h-screen flex-col items-center justify-center">
+          <div
+            className={`text-center transition-opacity duration-1000 ${
+              isTransitioning ? "opacity-0" : "opacity-100"
+            }`}
+          >
+            <p className="mb-2 text-2xl font-light text-white/80">
+              {currentPhoto.name}
+            </p>
+            <p className="text-lg text-white/50">
+              Configure as credenciais do Google Drive para exibir fotos reais
+            </p>
+          </div>
+          {/* Photo counter */}
+          <div className="absolute bottom-6 left-0 right-0 text-center">
+            <p className="text-sm text-white/40">
+              {currentIndex + 1} / {photos.length} (Modo Demo)
+            </p>
+            <div className="mx-auto mt-3 flex justify-center gap-2">
+              {photos.map((_, index) => (
+                <div
+                  key={index}
+                  className={`h-1.5 w-8 rounded-full transition-colors ${
+                    index === currentIndex ? "bg-white/80" : "bg-white/20"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="flex min-h-screen items-center justify-center">
+          <div
+            className={`relative h-screen w-full transition-opacity duration-1000 ${
+              isTransitioning ? "opacity-0" : "opacity-100"
+            }`}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={currentPhoto.thumbnailUrl}
+              alt={currentPhoto.name}
+              className="h-full w-full object-contain"
+            />
+          </div>
+
+          {/* Photo name overlay */}
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-6">
+            <div className="flex items-end justify-between">
+              <p className="text-sm text-white/40">
+                {currentIndex + 1} / {photos.length}
+              </p>
+            </div>
+            <div className="mx-auto mt-3 flex max-w-md justify-center gap-1.5">
+              {photos.map((_, index) => (
+                <div
+                  key={index}
+                  className={`h-1 flex-1 rounded-full transition-colors ${
+                    index === currentIndex ? "bg-white/80" : "bg-white/20"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Error indicator */}
+      {error && (
+        <div className="absolute top-20 right-6 z-10 rounded-lg bg-amber-900/80 px-4 py-2 text-sm text-amber-200 backdrop-blur">
+          ⚠ {error}
+        </div>
+      )}
+    </div>
+  );
+}
