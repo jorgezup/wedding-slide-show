@@ -131,7 +131,7 @@ export default function JantarSlideshowPage() {
             <img
               src={currentPhoto.thumbnailUrl}
               alt={currentPhoto.name}
-              className="h-full w-full object-cover"
+              className="h-full w-full object-contain"
             />
           </div>
 
