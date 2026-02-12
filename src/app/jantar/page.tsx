@@ -93,7 +93,7 @@ export default function JantarSlideshowPage() {
       <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/60 to-transparent p-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-light text-white/90">
-            Eiva e Jorge - Jantar{" "}
+            Nossos momentos{" "}
             <span className="text-white/60">• 14/02/2026</span>
           </h1>
           <Link
