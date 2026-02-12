@@ -7,8 +7,10 @@ Slideshow de fotos em tempo real para casamento. Os convidados compartilham foto
 - **Página Inicial**: Título "Eiva e Jorge 14/02/2026", QR Code para compartilhamento
 - **QR Code**: Acesso direto à pasta compartilhada do Google Drive para upload de fotos pelos convidados
 - **Slideshow**: Exibição automática de fotos com transições suaves
+- **Slideshow do Jantar**: Endpoint separado `/jantar` para exibir fotos de uma pasta específica do jantar
 - **Tempo Real**: Novas fotos aparecem automaticamente a cada 15 segundos
 - **Google Drive**: Integração com pasta compartilhada do Google Drive
+- **Múltiplas Pastas**: Suporte para diferentes pastas do Google Drive (principal e jantar)
 
 ## Tecnologias
 
@@ -80,9 +82,14 @@ cp .env.example .env.local
 
 Preencha as variáveis:
 
+**Para o slideshow principal:**
 - `GOOGLE_API_KEY`: Chave de API do Google (obtenha em [Google Cloud Console](https://console.cloud.google.com))
 - `GOOGLE_DRIVE_FOLDER_ID`: ID da pasta compartilhada no Google Drive
 - `NEXT_PUBLIC_GOOGLE_DRIVE_SHARE_URL`: URL pública da pasta para o QR Code
+
+**Para o slideshow do jantar (opcional):**
+- `GOOGLE_DRIVE_JANTAR_FOLDER_ID`: ID da pasta compartilhada no Google Drive para o jantar
+- `NEXT_PUBLIC_GOOGLE_DRIVE_JANTAR_SHARE_URL`: URL pública da pasta do jantar para o QR Code
 
 ### 3. Configurar Google Drive
 
@@ -114,10 +121,28 @@ npm run dev
 Acesse:
 - Página inicial: [http://localhost:3000](http://localhost:3000)
 - Slideshow: [http://localhost:3000/slideshow](http://localhost:3000/slideshow)
+- Slideshow do Jantar: [http://localhost:3000/jantar](http://localhost:3000/jantar)
 
 ## Modo Demo
 
 Se as credenciais do Google Drive não estiverem configuradas, o app funciona em modo demo com fotos de exemplo.
+
+## Endpoint do Jantar
+
+O endpoint `/jantar` foi criado para exibir fotos de uma pasta separada do Google Drive, ideal para momentos específicos como o jantar do casamento.
+
+**Características:**
+- Usa sua própria pasta do Google Drive (configurada via `GOOGLE_DRIVE_JANTAR_FOLDER_ID`)
+- Funciona independentemente do slideshow principal
+- Possui seu próprio QR Code para compartilhamento
+- Mesmo comportamento de slideshow (transições, auto-atualização, etc.)
+
+**Para configurar:**
+1. Crie uma nova pasta no Google Drive para o jantar
+2. Configure as variáveis de ambiente `GOOGLE_DRIVE_JANTAR_FOLDER_ID` e `NEXT_PUBLIC_GOOGLE_DRIVE_JANTAR_SHARE_URL`
+3. Acesse `/jantar` para visualizar o slideshow
+
+**Nota:** Se as variáveis do jantar não estiverem configuradas, o endpoint funcionará em modo demo.
 
 ## Build de Produção
 
@@ -149,6 +174,12 @@ Vá em **Project Settings → Environment Variables** e adicione:
 GOOGLE_API_KEY=sua_chave_api_aqui
 GOOGLE_DRIVE_FOLDER_ID=seu_folder_id_aqui
 NEXT_PUBLIC_GOOGLE_DRIVE_SHARE_URL=https://drive.google.com/drive/folders/seu_folder_id_aqui
+```
+
+**Variáveis Opcionais (para o slideshow do jantar):**
+```
+GOOGLE_DRIVE_JANTAR_FOLDER_ID=seu_folder_id_jantar_aqui
+NEXT_PUBLIC_GOOGLE_DRIVE_JANTAR_SHARE_URL=https://drive.google.com/drive/folders/seu_folder_id_jantar_aqui
 ```
 
 **Como obter cada valor:**
