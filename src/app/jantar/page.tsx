@@ -145,7 +145,7 @@ export default function JantarSlideshowPage() {
               <img
                 src={nextPhoto.thumbnailUrl}
                 alt={nextPhoto.name}
-                className="h-full w-full object-cover animate-ken-burns"
+                className="h-full w-full object-contain animate-ken-burns"
               />
             </div>
           )}
