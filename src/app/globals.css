@@ -16,32 +16,44 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(1.05);
-  }
-  to {
-    opacity: 1;
+/* Ken Burns slow zoom effect */
+@keyframes kenBurns {
+  0% {
     transform: scale(1);
   }
+  100% {
+    transform: scale(1.08);
+  }
 }
 
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-    transform: scale(1);
-  }
-  to {
+/* Crossfade in */
+@keyframes slideFadeIn {
+  0% {
     opacity: 0;
-    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
   }
 }
 
-.animate-fade-in {
-  animation: fadeIn 1s ease-in-out forwards;
+/* Crossfade out */
+@keyframes slideFadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
-.animate-fade-out {
-  animation: fadeOut 1s ease-in-out forwards;
+.animate-ken-burns {
+  animation: kenBurns 7s ease-out forwards;
+}
+
+.animate-slide-fade-in {
+  animation: slideFadeIn 1.2s ease-in-out forwards;
+}
+
+.animate-slide-fade-out {
+  animation: slideFadeOut 1.2s ease-in-out forwards;
 }
