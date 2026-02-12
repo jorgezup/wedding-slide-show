@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
 
@@ -12,10 +12,9 @@ interface Photo {
   demo?: boolean;
 }
 
-const POLL_INTERVAL = 15000; // Poll every 15 seconds for new photos
-const SLIDE_DURATION = 6000; // Each slide shows for 6 seconds
-const FADE_OUT_DURATION = 1000; // Fade out duration in milliseconds
-const FADE_IN_DELAY = 50; // Delay before fade-in to allow React to render new content
+const POLL_INTERVAL = 15000;
+const SLIDE_DURATION = 6000;
+const TRANSITION_DURATION = 1200;
 const GOOGLE_DRIVE_SHARE_URL =
   process.env.NEXT_PUBLIC_GOOGLE_DRIVE_SHARE_URL ||
   "https://drive.google.com/drive/folders/YOUR_FOLDER_ID";
@@ -23,10 +22,11 @@ const GOOGLE_DRIVE_SHARE_URL =
 export default function SlideshowPage() {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [nextIndex, setNextIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showQRModal, setShowQRModal] = useState(true);
+  const kenBurnsKey = useRef(0);
 
   const fetchPhotos = useCallback(async () => {
     try {
@@ -44,40 +44,35 @@ export default function SlideshowPage() {
     }
   }, []);
 
-  // Initial fetch and polling for new photos
   useEffect(() => {
     fetchPhotos();
     const pollInterval = setInterval(fetchPhotos, POLL_INTERVAL);
     return () => clearInterval(pollInterval);
   }, [fetchPhotos]);
 
-  // Auto-advance slideshow
+  // Auto-advance slideshow with crossfade
   useEffect(() => {
     if (photos.length <= 1) return;
 
-    const activeTimeouts = new Set<NodeJS.Timeout>();
+    let swapTimeout: NodeJS.Timeout;
 
     const slideInterval = setInterval(() => {
-      setIsTransitioning(true);
-      
-      // Change content after fade-out completes
-      const contentTimeout = setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % photos.length);
-        
-        // Start fade-in after a small delay to let React render new content
-        const fadeInTimeout = setTimeout(() => {
-          setIsTransitioning(false);
-        }, FADE_IN_DELAY);
-        activeTimeouts.add(fadeInTimeout);
-      }, FADE_OUT_DURATION);
-      activeTimeouts.add(contentTimeout);
+      const next = (currentIndex + 1) % photos.length;
+      setNextIndex(next);
+
+      // After transition completes, swap
+      swapTimeout = setTimeout(() => {
+        kenBurnsKey.current += 1;
+        setCurrentIndex(next);
+        setNextIndex(null);
+      }, TRANSITION_DURATION);
     }, SLIDE_DURATION);
 
     return () => {
       clearInterval(slideInterval);
-      activeTimeouts.forEach(timeout => clearTimeout(timeout));
+      clearTimeout(swapTimeout);
     };
-  }, [photos.length]);
+  }, [photos.length, currentIndex]);
 
   if (loading) {
     return (
@@ -91,12 +86,13 @@ export default function SlideshowPage() {
   }
 
   const currentPhoto = photos[currentIndex];
+  const nextPhoto = nextIndex !== null ? photos[nextIndex] : null;
   const isDemo = currentPhoto?.demo;
 
   return (
-    <div className="relative min-h-screen bg-black">
+    <div className="relative min-h-screen bg-black overflow-hidden">
       {/* Header overlay */}
-      <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/60 to-transparent p-6">
+      <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/70 via-black/30 to-transparent p-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-light text-white/90">
             Casamento Eiva e Jorge{" "}
@@ -126,11 +122,7 @@ export default function SlideshowPage() {
         </div>
       ) : isDemo ? (
         <div className="flex min-h-screen flex-col items-center justify-center">
-          <div
-            className={`text-center transition-opacity duration-1000 ${
-              isTransitioning ? "opacity-0" : "opacity-100"
-            }`}
-          >
+          <div className="text-center animate-slide-fade-in">
             <div className="mb-6 text-8xl">
               {currentIndex === 0 ? "📸" : currentIndex === 1 ? "💒" : "🥂"}
             </div>
@@ -141,56 +133,39 @@ export default function SlideshowPage() {
               Configure as credenciais do Google Drive para exibir fotos reais
             </p>
           </div>
-          {/* Photo counter */}
-          <div className="absolute bottom-6 left-0 right-0 text-center">
-            <p className="text-sm text-white/40">
-              {currentIndex + 1} / {photos.length} (Modo Demo)
-            </p>
-            <div className="mx-auto mt-3 flex justify-center gap-2">
-              {photos.map((_, index) => (
-                <div
-                  key={index}
-                  className={`h-1.5 w-8 rounded-full transition-colors ${
-                    index === currentIndex ? "bg-white/80" : "bg-white/20"
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
         </div>
       ) : (
-        <div className="flex min-h-screen items-center justify-center">
+        <div className="relative h-screen w-full">
+          {/* Current photo (base layer) */}
           <div
-            className={`relative h-screen w-full transition-opacity duration-1000 ${
-              isTransitioning ? "opacity-0" : "opacity-100"
-            }`}
+            key={`current-${currentIndex}-${kenBurnsKey.current}`}
+            className="absolute inset-0 animate-ken-burns"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={currentPhoto.thumbnailUrl}
               alt={currentPhoto.name}
-              className="h-full w-full object-contain"
+              className="h-full w-full object-cover"
             />
           </div>
 
-          {/* Photo name overlay */}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-6">
-            <div className="flex items-end justify-between">
-              <p className="text-sm text-white/40">
-                {currentIndex + 1} / {photos.length}
-              </p>
+          {/* Next photo (crossfade layer) */}
+          {nextPhoto && (
+            <div
+              key={`next-${nextIndex}`}
+              className="absolute inset-0 animate-slide-fade-in"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={nextPhoto.thumbnailUrl}
+                alt={nextPhoto.name}
+                className="h-full w-full object-cover animate-ken-burns"
+              />
             </div>
-            <div className="mx-auto mt-3 flex max-w-md justify-center gap-1.5">
-              {photos.map((_, index) => (
-                <div
-                  key={index}
-                  className={`h-1 flex-1 rounded-full transition-colors ${
-                    index === currentIndex ? "bg-white/80" : "bg-white/20"
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
+          )}
+
+          {/* Subtle vignette overlay */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_50%,rgba(0,0,0,0.4)_100%)]" />
         </div>
       )}
 
